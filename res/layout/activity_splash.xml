@@ -1,0 +1,20 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical"
+	tools:context=".SplashActivity">
+	<FrameLayout
+	    android:layout_width="fill_parent"
+		android:layout_height="fill_parent">
+		<FrameLayout
+			android:id="@+id/base_fragment"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"/>
+		<TextView
+		    android:id="@+id/TextVersion"
+		    android:layout_width="fill_parent"
+		    android:layout_height="fill_parent"
+		    android:gravity="right|bottom"/>
+	</FrameLayout>
+</LinearLayout>

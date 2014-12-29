@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.pinetree.cambus.MainActivity" >
+    <item
+        android:id="@+id/camera"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="사진촬영"/>
+    <item
+        android:id="@+id/album"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="가져오기"/>
+</menu>

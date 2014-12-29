@@ -1,0 +1,156 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+    <ImageView
+        android:id="@+id/Background"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical">
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical"
+	        android:scrollbars="vertical" 
+	        >
+	        <!-- 현재날짜 -->
+	        <FrameLayout
+	            android:id="@+id/dateInfo"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_marginTop="5dp"
+	            android:layout_marginBottom="5dp"
+	            >
+				<ImageView
+				    android:id="@+id/dateBg"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center"
+					android:adjustViewBounds="true"/>                
+				<TextView
+				    android:id="@+id/date"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center"
+					android:textColor="@color/date" />
+	        </FrameLayout>
+	        
+	        <!-- Plan -->
+	        <FrameLayout
+	            android:id="@+id/Plan"
+	            android:layout_marginTop="5dp"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            >
+	            <ImageView
+	                android:id="@+id/bgPlan"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:adjustViewBounds="true"
+	                 />
+	            <ImageView
+	                android:id="@+id/btnPlanMod"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_gravity="center_vertical|right"
+	                android:adjustViewBounds="true"
+	                 />
+	        </FrameLayout>
+	        
+	        <!-- 목표시간 -->
+	        <TextView
+	            android:id="@+id/PlanTime"
+	            android:layout_marginTop="10dp"
+	            android:layout_marginBottom="0dp"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            />
+	        <LinearLayout
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginTop="5dp"
+	            android:layout_marginBottom="10dp"
+	            android:layout_gravity="center_horizontal"
+	            android:orientation="vertical"
+	            >
+	            <RelativeLayout
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                >
+	                <ImageView
+	                    android:id="@+id/lighthouse"
+	                    android:layout_width="wrap_content"
+		                android:layout_height="wrap_content"
+		                android:adjustViewBounds="true"
+		                android:layout_alignParentLeft="true"
+	                    />
+	                <ImageView
+	                    android:id="@+id/water"
+	                    android:layout_width="wrap_content"
+		                android:layout_height="wrap_content"
+		                android:adjustViewBounds="true"
+		                android:paddingLeft="10dp"
+		                android:layout_alignParentBottom="true"
+		                android:layout_toRightOf="@+id/lighthouse"
+	                    />
+	                <ImageView
+	                    android:id="@+id/whale"
+	                    android:layout_width="wrap_content"
+		                android:layout_height="wrap_content"
+		                android:adjustViewBounds="true"
+		                android:paddingRight="20dp"
+		                android:layout_alignParentBottom="true"
+		                android:layout_alignParentRight="true"
+	                    />
+	            </RelativeLayout>
+		        <ImageView
+	                android:id="@+id/titlePromise"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:adjustViewBounds="true"
+	                />
+	        </LinearLayout>
+	        <!-- 약속타이틀 -->
+	        
+	        <!-- 약속 -->
+	        <LinearLayout
+	            android:id="@+id/PromiseList"
+	            android:layout_marginTop="10dp"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            android:orientation="vertical"
+	            >
+	            
+	        </LinearLayout>
+	        
+	        <!-- 약속 추가버튼 -->
+	        <FrameLayout
+	            android:id="@+id/AddPromise"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            >
+	            <ImageView
+	                android:id="@+id/bgPromiseAdd"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:adjustViewBounds="true"
+	                />
+	            <ImageView
+	                android:id="@+id/btnPromiseAdd"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:adjustViewBounds="true"
+	                android:layout_gravity="center"
+	                />
+	        </FrameLayout>
+	    </LinearLayout>
+    </ScrollView>
+</FrameLayout>

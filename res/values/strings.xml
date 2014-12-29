@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">칭찬바다</string>
+    
+    <string name="remainText">남은시간</string>
+    <string name="usageText">현재까지 사용시간</string>
+
+    <string name="check_passwd">비밀번호를 입력하세요</string>
+    <string name="passwd_message">password</string>
+    <string name="wrong_passwd">비밀번호가 틀렸습니다</string>
+    <string name="set_message">각오를 입력하세요</string>
+
+    <string name="plan_timepicker_lbl">시간</string>
+    <string name="plan_alarmpicker_lbl">알람</string>
+
+    <string name="promise_lbl_subject">구분</string>
+    <string name="promise_lbl_repeat">반복</string>
+    <string name="promise_lbl_startend">시간설정</string>
+
+    <string name="promise_start">시작</string>
+    <string name="promise_end">종료</string>
+    
+    <string name="status_current_usage">현재까지 사용시간</string>
+
+    <string name="status_app_rank">No.</string>
+    <string name="status_app_name">App</string>
+    <string name="status_app_rate">사용량</string>
+    <string name="status_app_count">횟수</string>
+    <string name="status_app_time">시간</string>
+    
+    <string name="NanumGothic">NanumGothic.ttf</string>
+    <string name="NanumGothicB">NanumGothicB.ttf</string>
+    <string name="NanumGothicL">NanumGothicL.ttf</string>
+</resources>

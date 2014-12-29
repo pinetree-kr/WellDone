@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:weightSum="1"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.4" >
+
+        <TextView
+            android:id="@+id/resultView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center|right"
+            android:gravity="right|center_vertical"
+            android:text="0"
+            android:textSize="24dp" />
+
+    </LinearLayout>
+	<LinearLayout
+	    android:layout_width="fill_parent"
+	    android:layout_height="0dp"
+	    android:gravity="center"
+        android:layout_weight="0.6">
+        
+	    <GridLayout
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:columnCount="5"
+	        android:orientation="horizontal"
+	        >
+	
+	        <Button
+	            android:id="@+id/btn0"
+	            android:text="0" />
+	
+	        <Button
+	            android:id="@+id/btn1"
+	            android:text="1" />
+	
+	        <Button
+	            android:id="@+id/btn2"
+	            android:text="2" />
+	
+	        <Button
+	            android:id="@+id/btn3"
+	            android:text="3" />
+	
+	        <Button
+	            android:id="@+id/btnA"
+	            android:layout_gravity="fill"
+	            android:layout_rowSpan="2"
+	            android:text="+" />
+	
+	        <Button
+	            android:id="@+id/btn4"
+	            android:text="4" />
+	
+	        <Button
+	            android:id="@+id/btn5"
+	            android:text="5" />
+	
+	        <Button
+	            android:id="@+id/btn6"
+	            android:text="6" />
+	
+	        <Button
+	            android:id="@+id/btn7"
+	            android:text="7" />
+	
+	        <Button
+	            android:id="@+id/btn8"
+	            android:text="8" />
+	
+	        <Button
+	            android:id="@+id/btn9"
+	            android:text="9" />
+	
+	        <Button
+	            android:id="@+id/btn10"
+	            android:text="A" />
+	
+	        <Button
+	            android:id="@+id/btn11"
+	            android:text="B" />
+	
+	        <Button
+	            android:id="@+id/btnS"
+	            android:text="-" />
+	
+	        <Button
+	            android:id="@+id/btn12"
+	            android:text="C" />
+	
+	        <Button
+	            android:id="@+id/btn13"
+	            android:text="D" />
+	
+	        <Button
+	            android:id="@+id/btn14"
+	            android:text="E" />
+	
+	        <Button
+	            android:id="@+id/btn15"
+	            android:text="F" />
+	
+	        <Button
+	            android:id="@+id/btnE"
+	            android:layout_gravity="fill"
+	            android:layout_rowSpan="2"
+	            android:gravity="center"
+	            android:text="=" />
+	
+	        <Button
+	            android:id="@+id/btnM"
+	            android:text="*" />
+	
+	        <Button
+	            android:id="@+id/btnD"
+	            android:text="/" />
+	
+	        <Button
+	            android:id="@+id/btnAC"
+	            android:layout_columnSpan="2"
+	            android:layout_gravity="fill"
+	            android:text="AC" />
+	    </GridLayout>
+	</LinearLayout>
+    
+
+</LinearLayout>

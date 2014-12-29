@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<color name="date">#ffffff</color>
+	<color name="status">#8fd2f2</color>
+	
+	<color name="app_status_title">#ffffff</color>
+	<color name="app_status">#ffffff</color>
+	
+	<color name="profile_message">#8fd2f2</color>
+	<color name="profile_usage">#111111</color>
+	<color name="profile_remain">#111111</color>
+	
+	<color name="status_usage">#111111</color>
+	<color name="status_remain">#111111</color>
+	
+	<color name="plan_timepicker_lbl">#111111</color>
+
+	<color name="promise_startend">#111111</color>
+	
+	<color name="plan_time">#111111</color>
+	<color name="plan_promise">#111111</color>
+	
+	<color name="notification_message">#111111</color>
+	<color name="notification_message_time">#8fd2f2</color>
+
+		<color name="result_yearmonth">#8fd2f2</color>
+	<color name="result_day">#111111</color>
+
+	<color name="result_dialog_date">#ffffff</color>
+	<color name="result_dialog_usage">#111111</color>
+
+	<color name="spinner_select">#4b4b4b</color>
+
+</resources> 

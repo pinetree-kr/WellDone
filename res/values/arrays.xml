@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="weekdays_images">
+        <item>day_0</item>
+        <item>day_1</item>
+        <item>day_2</item>
+        <item>day_3</item>
+        <item>day_4</item>
+        <item>day_5</item>
+        <item>day_6</item>
+    </string-array>
+    <string-array name="app_rank">
+        <item>rank_1</item>
+        <item>rank_2</item>
+        <item>rank_3</item>        
+    </string-array>
+    <string-array name="weekdays">
+        <item>sunday</item>
+        <item>monday</item>
+        <item>tuesday</item>
+        <item>wednesday</item>
+        <item>thursday</item>
+        <item>friday</item>
+        <item>saturday</item>
+    </string-array>
+    <string-array name="weekday_results">
+        <item>sunday_result</item>
+        <item>monday_result</item>
+        <item>tuesday_result</item>
+        <item>wednesday_result</item>
+        <item>thursday_result</item>
+        <item>friday_result</item>
+        <item>saturday_result</item>
+    </string-array>
+    <string-array name="weekdays_date">
+        <item>date_0</item>
+        <item>date_1</item>
+        <item>date_2</item>
+        <item>date_3</item>
+        <item>date_4</item>
+        <item>date_5</item>
+        <item>date_6</item>        
+    </string-array>
+    
+    <string-array name="circle_images">
+        <item>circle_00001</item>
+        <item>circle_00002</item>
+        <item>circle_00003</item>
+        <item>circle_00004</item>
+        <item>circle_00005</item>
+        <item>circle_00006</item>
+        <item>circle_00007</item>
+        <item>circle_00008</item>
+        <item>circle_00009</item>
+        <item>circle_00010</item>
+        <item>circle_00011</item>
+        <item>circle_00012</item>
+        <item>circle_00013</item>
+        <item>circle_00014</item>
+        <item>circle_00015</item>
+        <item>circle_00016</item>
+        <item>circle_00017</item>
+        <item>circle_00018</item>
+        <item>circle_00019</item>
+        <item>circle_00020</item>
+        <item>circle_00021</item>
+        <item>circle_00022</item>
+        <item>circle_00023</item>
+        <item>circle_00024</item>
+        <item>circle_00025</item>
+        <item>circle_00026</item>
+        <item>circle_00027</item>
+        <item>circle_00028</item>
+        <item>circle_00029</item>
+        <item>circle_00030</item>
+        <item>circle_00031</item>
+        <item>circle_00032</item>
+        <item>circle_00033</item>
+        <item>circle_00034</item>
+        <item>circle_00035</item>
+        <item>circle_00036</item>
+        <item>circle_00037</item>
+        <item>circle_00038</item>
+        <item>circle_00039</item>
+        <item>circle_00040</item>
+        <item>circle_00041</item>
+        <item>circle_00042</item>
+        <item>circle_00043</item>
+        <item>circle_00044</item>
+        <item>circle_00045</item>
+        <item>circle_00046</item>
+        <item>circle_00047</item>
+        <item>circle_00048</item>
+        <item>circle_00049</item>
+        <item>circle_00050</item>
+        <item>circle_00051</item>
+    </string-array>
+</resources>

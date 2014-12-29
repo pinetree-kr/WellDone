@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    >
+    <!-- 
+    android:background="@drawable/drop_down"
+    -->
+    <ImageView
+        android:id="@+id/spinnerBg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        />
+    <TextView
+        android:id="@+id/spinnerText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:textColor="@color/spinner_select"
+        />
+    <!--
+    	android:background="@drawable/drop_down_bg"
+        android:textColor="@android:color/black"
+        android:textSize="25sp"
+     -->
+    <!-- 
+    <TextView
+        android:id="@+id/spinnerPreference"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="15"
+        android:text=""
+        android:textColor="@android:color/black"
+        android:textSize="25sp" />
+     -->
+</FrameLayout>
