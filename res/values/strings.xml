@@ -6,11 +6,17 @@
     <string name="remainText">남은시간</string>
     <string name="usageText">현재까지 사용시간</string>
 
+    <string name="check_message">각오를 입력하세요</string>
+    
+    <string name="set_passwd">비밀번호를 설정하세요</string>
+    <string name="set_passwd2">다시 한번 입력하세요</string>
+    
     <string name="check_passwd">비밀번호를 입력하세요</string>
     <string name="passwd_message">password</string>
     <string name="wrong_passwd">비밀번호가 틀렸습니다</string>
-    <string name="set_message">각오를 입력하세요</string>
-
+    <string name="save_passwd">비밀번호가 저장되었습니다</string>
+    <string name="not_equal">일치하지 않습니다</string>
+    
     <string name="plan_timepicker_lbl">시간</string>
     <string name="plan_alarmpicker_lbl">알람</string>
 

@@ -43,18 +43,6 @@ public class ResultDialogFragment extends BaseDialogFragment {
 		
 		return dialog;
 	}
-
-	/*/
-	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState){
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		LayoutInflater inflater = getActivity().getLayoutInflater();
-		View view = inflater.inflate(R.layout.fragment_dialog_result, null);
-		setupUI(view);
-		builder.setView(view);
-		return builder.create();
-	}
-	/**/
 	
 	@SuppressWarnings("unchecked")
 	@Override

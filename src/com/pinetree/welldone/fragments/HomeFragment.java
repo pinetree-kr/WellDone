@@ -109,7 +109,7 @@ public class HomeFragment extends BaseFragment{
 		if(profile.getFilePath().equals("")){
 			setProfile(
 					imageLoader.getResizedBitmapWidely(
-							R.drawable.yunakim_sample,
+							R.drawable.cloud,
 							(int)(186*app.getScaledDensity())));
 		}else{
 			try {
@@ -241,22 +241,28 @@ public class HomeFragment extends BaseFragment{
 	}
 	
 	private void onUpdateMessageBox(){
-		AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-		alert.setTitle(R.string.set_message);
-		//alert.setMessage("메시지를 입력하세요.");
+		LayoutInflater inflater = getActivity().getLayoutInflater();
 		final ProfileModel p = app.getProfile();
+
+		AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+		View view = inflater.inflate(R.layout.alertdialog_profile_message, null);
 		
-		final EditText input = new EditText(getActivity());
-		input.setMaxLines(3);
-		input.setHint(p.getMessage());
-		alert.setView(input);
+		TextView checkMessage = (TextView)view.findViewById(R.id.checkMessage);
+		fontLoader.setTextViewTypeFace(
+				checkMessage,
+				R.string.NanumGothic,
+				(float)8.0);
 		
+		final EditText message = (EditText)view.findViewById(R.id.textMessage);
+		message.setHint(p.getMessage());
+		
+		alert.setView(view);
 		alert.setPositiveButton("저장", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				String text = input.getText().toString();
+				String text = message.getText().toString();
 				if(text.equals("")){
-					text = input.getHint().toString();
+					text = message.getHint().toString();
 				}
 				p.setMessage(text);
 				app.updateProfile(p);

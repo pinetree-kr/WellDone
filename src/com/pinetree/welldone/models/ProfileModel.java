@@ -11,12 +11,19 @@ public class ProfileModel extends Model{
 	public ProfileModel(){
 		filePath = "";
 		message = "";
-		passwd = DEFAULT_PASSWD;
+		passwd = "";
 	}
 	public void setPasswd(String passwd){
 		this.passwd = passwd;
 	}
 	public String getPasswd(){
+		/*/
+		if(passwd.equals("")){
+			return DEFAULT_PASSWD;
+		}else{
+			return passwd;
+		}
+		/**/
 		return passwd;
 	}
 	public void setFilePath(String path){

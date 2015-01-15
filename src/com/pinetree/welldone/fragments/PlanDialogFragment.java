@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.TimePicker.OnTimeChangedListener;
 
 import com.pinetree.welldone.R;
 import com.pinetree.welldone.models.Model;
@@ -251,6 +252,27 @@ public class PlanDialogFragment extends BaseDialogFragment {
 			end.setCurrentHour(promise.getEndHour());
 			end.setCurrentMinute(promise.getEndMin());
 			
+			start.setOnTimeChangedListener(new OnTimeChangedListener() {
+				@Override
+				public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+					if(hourOfDay>=end.getCurrentHour()){
+						end.setCurrentHour(hourOfDay);
+						if(minute>=end.getCurrentMinute())
+							end.setCurrentMinute(minute);
+					}
+				}
+			});
+			end.setOnTimeChangedListener(new OnTimeChangedListener() {
+				@Override
+				public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+					if(hourOfDay<=start.getCurrentHour()){
+						start.setCurrentHour(hourOfDay);
+						if(minute<=start.getCurrentMinute())
+							start.setCurrentMinute(minute);
+					}
+				}
+			});
+			
 			alert.setView(view);
 			alert.setPositiveButton("저장", new DialogInterface.OnClickListener() {
 				@Override
@@ -259,16 +281,21 @@ public class PlanDialogFragment extends BaseDialogFragment {
 					promise.setStartTime(
 						start.getCurrentHour(),
 						start.getCurrentMinute());
+					/*/
 					if(start.getCurrentHour()>=end.getCurrentHour()
 							&& start.getCurrentMinute()>end.getCurrentMinute()){
 						promise.setEndTime(
-							start.getCurrentHour(),
+							start.getCurrentHour()+1,
 							start.getCurrentMinute());
 					}else{
 						promise.setEndTime(
 							end.getCurrentHour(),
 							end.getCurrentMinute());						
 					}
+					/**/
+					promise.setEndTime(
+							end.getCurrentHour(),
+							end.getCurrentMinute());						
 					updatePromise(promise);
 				}
 			});
@@ -320,6 +347,7 @@ public class PlanDialogFragment extends BaseDialogFragment {
 		public OnBtnClickListener(BaseDialogFragment dialog){
 			this.dialog = dialog;
 		}
+		
 		@Override
 		public void onClick(View v) {
 			String tag = (String)v.getTag();
@@ -327,7 +355,8 @@ public class PlanDialogFragment extends BaseDialogFragment {
 			if(tag.equals("ok")){
 				if(object.getClass().equals(PlanModel.class)){
 					PlanModel plan = (PlanModel)object;
-					plan.setUsage(0);
+					//사용량 초기화
+					//plan.setUsage(0);
 					
 					plan.setTime(
 							planTimePicker.getCurrentHour(),

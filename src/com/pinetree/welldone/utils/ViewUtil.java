@@ -53,8 +53,10 @@ public class ViewUtil {
 		// 초기화
 		view.removeAllViews();
 		
-		int year = calendar.get(Calendar.YEAR);
-		int month = calendar.get(Calendar.MONTH)+1;
+		int startYear = calendar.get(Calendar.YEAR);
+		int startMonth = calendar.get(Calendar.MONTH)+1;
+		
+		int startDay, endYear, endMonth, endDay;
 		//int year = calendar.get(Calendar.DAY_OF_MONTH);
 		
 		//Sunday : 0 ~ Saturday : 6
@@ -63,21 +65,27 @@ public class ViewUtil {
 		int lastWeek = (int)Math.ceil((double)(endOfMonth+startDayOfWeek)/7);
 		
 		String startDate = null, endDate = null;
-		int startDay, endDay;
+		
 		int weekOffset = 0;
 		
 		//초기화
 		calendar.add(Calendar.DAY_OF_MONTH, -startDayOfWeek);
 		for(int i=0; i<lastWeek; i++){
-			year = calendar.get(Calendar.YEAR);
-			month = calendar.get(Calendar.MONTH) + 1;
 			// 일요일
+			startYear = calendar.get(Calendar.YEAR);
+			startMonth = calendar.get(Calendar.MONTH) + 1;
 			startDay = calendar.get(Calendar.DAY_OF_MONTH);
-			// 토요일
-			endDay = startDay + 6;
 			
-			startDate = String.format("%04d%02d%02d", year,month,startDay);
-			endDate = String.format("%04d%02d%02d", year,month,endDay);
+			// 토요일
+			calendar.add(Calendar.DAY_OF_MONTH, 6);
+			endYear = calendar.get(Calendar.YEAR);
+			endMonth = calendar.get(Calendar.MONTH) + 1;
+			endDay = calendar.get(Calendar.DAY_OF_MONTH);
+			calendar.add(Calendar.DAY_OF_MONTH, -6);
+			//endDay = startDay + 6;
+			
+			startDate = String.format("%04d%02d%02d", startYear,startMonth,startDay);
+			endDate = String.format("%04d%02d%02d", endYear,endMonth,endDay);
 			
 			//첫주
 			if(i==0){

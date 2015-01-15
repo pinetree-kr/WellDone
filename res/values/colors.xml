@@ -14,6 +14,9 @@
 	<color name="status_remain">#111111</color>
 	
 	<color name="plan_timepicker_lbl">#111111</color>
+	
+	<color name="check_passwd">#111111</color>
+	<color name="check_message">#111111</color>
 
 	<color name="promise_startend">#111111</color>
 	
@@ -23,7 +26,7 @@
 	<color name="notification_message">#111111</color>
 	<color name="notification_message_time">#8fd2f2</color>
 
-		<color name="result_yearmonth">#8fd2f2</color>
+	<color name="result_yearmonth">#8fd2f2</color>
 	<color name="result_day">#111111</color>
 
 	<color name="result_dialog_date">#ffffff</color>

@@ -38,6 +38,13 @@ public abstract class BaseFragment extends Fragment implements BaseFragmentListe
 		fontLoader = new FontLoader(activity.getApplicationContext());
 	}
 
+	public void Clear(){
+		saInterface = null;
+		sfInterface = null;
+		app = null;
+		fontLoader.Clear();
+		imageLoader.Clear();
+	}
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
@@ -78,6 +85,7 @@ public abstract class BaseFragment extends Fragment implements BaseFragmentListe
 	@Override
 	public void onDestroy(){
 		super.onDestroy();
+		Clear();
 	}
 	
 	@Override

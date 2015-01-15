@@ -205,27 +205,30 @@ public class PlanFragment extends BaseFragment{
 		if(data.getClass().equals(PlanModel.class)){
 			PlanModel plan = (PlanModel)data;
 			app.updatePlan(plan);
-			app.initUsedApps();
+			//app.initUsedApps();
 			updatePlan(plan);
 			
 			ServiceCaller service = ServiceCaller.getInstance();
-				if(plan.getTime()>0){
+			if(plan.getTime()>0){
+				service.stopCall(getActivity().getApplicationContext());
+				service.stopAlarm(getActivity().getApplicationContext());
+				if(!service.isCall(getActivity().getApplicationContext())){
+					service.startCall(getActivity().getApplicationContext());
+					service.startAlarm(getActivity().getApplicationContext());
+					Toast.makeText(
+						getActivity().getApplicationContext(),
+						"실시간 앱체킹을 시작합니다", Toast.LENGTH_LONG).show();
+				}
+			}
+			else{
+				if(service.isCall(getActivity().getApplicationContext())){
 					service.stopCall(getActivity().getApplicationContext());
-					if(!service.isCall(getActivity().getApplicationContext())){
-						service.startCall(getActivity().getApplicationContext());
-						Toast.makeText(
-							getActivity().getApplicationContext(),
-							"실시간 앱체킹을 시작합니다", 1000).show();
-					}
+					service.stopAlarm(getActivity().getApplicationContext());
+					Toast.makeText(
+						getActivity().getApplicationContext(),
+						"실시간 앱체킹을 종료합니다", Toast.LENGTH_LONG).show();
 				}
-				else{
-					if(service.isCall(getActivity().getApplicationContext())){
-						service.stopCall(getActivity().getApplicationContext());
-						Toast.makeText(
-							getActivity().getApplicationContext(),
-							"실시간 앱체킹을 종료합니다", 1000).show();
-					}
-				}
+			}
 			
 		}
 		else if(data.getClass().equals(PromiseModel.class)){		
@@ -258,8 +261,12 @@ public class PlanFragment extends BaseFragment{
 			
 			if(object.getClass().equals(PromiseModel.class)){
 				if(app.getPromises(5).size()<5){
-					//openDialog(object);
-					onCheckPasswd(object);
+					openDialog(object);
+					//onCheckPasswd(object);
+				}else{
+					Toast.makeText(
+							getActivity().getApplicationContext(),
+							"5개까지 등록가능합니다", Toast.LENGTH_LONG).show();
 				}
 			}
 			else if(object.getClass().equals(PlanModel.class)){
@@ -270,18 +277,28 @@ public class PlanFragment extends BaseFragment{
 	}
 	
 	private void onCheckPasswd(final Model object){
-		AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-		alert.setTitle(R.string.check_passwd);
 		final ProfileModel profile = app.getProfile();
-		final EditText input = new EditText(getActivity());
-		input.setHint(R.string.passwd_message);
-		//input.setTextAppearance(getActivity(), )
-		alert.setView(input);
+		LayoutInflater inflater = getActivity().getLayoutInflater();
+
+		AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+		View view = inflater.inflate(R.layout.alertdialog_passwd, null);
+		
+		TextView checkPasswd = (TextView)view.findViewById(R.id.checkPasswd);
+		fontLoader.setTextViewTypeFace(
+				checkPasswd,
+				R.string.check_passwd,
+				R.string.NanumGothic,
+				(float)8.0);
+		
+		final EditText passwd = (EditText)view.findViewById(R.id.textPassword);
+		passwd.setHint(R.string.passwd_message);
+		
+		alert.setView(view);
 		
 		alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				String text = input.getText().toString();
+				String text = passwd.getText().toString();
 				if(text.equals(profile.getPasswd())){
 					openDialog(object);
 				}else{

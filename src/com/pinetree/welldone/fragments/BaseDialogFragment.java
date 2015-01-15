@@ -27,11 +27,9 @@ public abstract class BaseDialogFragment extends DialogFragment {
 		fontLoader = new FontLoader(activity.getApplicationContext());
 		imageLoader = new ImageLoader(getResources(), app.getScaledRate());
 	}
-	/*/
-	public void setTargetFragment(Fragment fragment,
-			int requestCode) {
-		// TODO Auto-generated method stub
-		super.setTargetFragment(fragment, requestCode);
+	@Override
+	public void onDestroyView(){
+		super.onDestroyView();
+		imageLoader.Clear();
 	}
-	/**/
 }

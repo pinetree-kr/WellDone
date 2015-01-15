@@ -403,6 +403,7 @@ public class DeviceInfo extends Application{
 		try {
 			object.put("filepath", profile.getFilePath());
 			object.put("message", profile.getMessage());
+			object.put("passwd", profile.getPasswd());			
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -415,7 +416,7 @@ public class DeviceInfo extends Application{
 		ProfileModel profile = new ProfileModel();
 		JSONObject object = getJSONProfile();
 		try {
-			String filePath = "", message = "";
+			String filePath = "", message = "", passwd = "";
 			if(object.has("filepath"))
 				filePath = object.getString("filepath");
 			profile.setFilePath(filePath);
@@ -423,6 +424,10 @@ public class DeviceInfo extends Application{
 				message = object.getString("message");
 			}
 			profile.setMessage(message);
+			if(object.has("passwd")){
+				passwd = object.getString("passwd");
+			}
+			profile.setPasswd(passwd);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.pinetree.welldone"
-    android:versionCode="3"
-    android:versionName="1.0.0.2"
+    android:versionCode="10"
+    android:versionName="1.0.0.9"
     >
 
     <uses-sdk
@@ -46,6 +46,11 @@
                 <action android:name="android.intent.action.DATE_CHANGED"></action>
             </intent-filter>
         </receiver>
+        <receiver
+            android:name="com.pinetree.welldone.receivers.ServiceCaller$LogServiceCallBR"
+            android:enabled="true"
+            android:exported="false"
+            />
         <receiver
             android:name="com.pinetree.welldone.receivers.ServiceCaller$ServiceCallBR"
             android:enabled="true"
