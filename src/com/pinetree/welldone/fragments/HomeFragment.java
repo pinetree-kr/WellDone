@@ -8,12 +8,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
@@ -43,10 +47,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.pinetree.views.RoundedDrawable;
+import com.pinetree.welldone.MainActivity;
 import com.pinetree.welldone.R;
 import com.pinetree.welldone.models.PlanModel;
 import com.pinetree.welldone.models.ProfileModel;
+import com.pinetree.welldone.services.AppCounterService;
 import com.pinetree.welldone.utils.DBHandler;
+import com.pinetree.welldone.utils.DeviceInfo;
 import com.pinetree.welldone.utils.ViewUtil;
 
 public class HomeFragment extends BaseFragment{
@@ -75,17 +82,72 @@ public class HomeFragment extends BaseFragment{
 		if(!path.exists()) {
 			path.mkdirs();	
 		}
+
+/*        // today (right now)
+        Calendar cal = Calendar.getInstance();
+        // get install date (00:00:00 on the installation day)
+        Calendar ical = Calendar.getInstance();
+        PackageManager pm = getActivity().getApplicationContext().getPackageManager();
+        long installed;
+        try {
+            ApplicationInfo appInfo = pm.getApplicationInfo("com.pinetree.welldone", 0);
+            String appFile = appInfo.sourceDir;
+            installed = new File(appFile).lastModified();
+            ical.setTimeInMillis(installed);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        ical.set(Calendar.MILLISECOND, 1);
+        ical.set(Calendar.SECOND, 0);
+        ical.set(Calendar.MINUTE, 0);
+        ical.set(Calendar.HOUR_OF_DAY, 0);
+        installed = ical.getTimeInMillis(); // - 24*60*60*1000*5;
+
+        // open DB
+        DBHandler handler = DBHandler.getInstance(getActivity().getApplicationContext(), false);
+        // query yesterday's info
+
+        int skipped = -1;
+        String past;
+        do {
+            skipped++;
+            cal.add(Calendar.DATE, -1);
+            past = String.format("%04d%02d%02d", cal.get(Calendar.YEAR),
+                    cal.get(Calendar.MONTH)+1, cal.get(Calendar.DAY_OF_MONTH));
+            Log.i("GetPast", past + String.format(": %3d", skipped));
+        } while ( !handler.isLogged(past) && (installed < cal.getTimeInMillis()) );
+        Log.i("GetPastInstalled", String.format(": %15d", installed) + String.format(" %02d %02d:%02d %02d", ical.get(Calendar.DAY_OF_MONTH),
+                ical.get(Calendar.HOUR_OF_DAY), ical.get(Calendar.MINUTE),
+                ical.get(Calendar.SECOND)));
+        Log.i("GetPastCurrent  ", String.format(": %15d", cal.getTimeInMillis()));
+*/
 	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_home, container, false);
+        // If AppCounterService is not running, start it here.
+        runAppCounterService();
 		setComponents(view);
 		return view;
 	}
-	
-	/**/
+
+    private void runAppCounterService() {
+        // checking whether a service is running is not a good idea...
+        // Hmm,,, let's just check the install date, and start the service if it is new
+        Calendar cal = Calendar.getInstance();
+        DeviceInfo di = (DeviceInfo) getActivity().getApplicationContext();
+        long installed = di.installTimeInMillis();
+
+        if ( ((installed < 0) || (cal.getTimeInMillis() - installed < 2*60*1000) ) && di.isPlanSet() ) {
+            Intent intent = new Intent(di, AppCounterService.class);
+            di.stopService(intent);
+            di.startService(intent);
+        }
+    }
+
+    /**/
 	private void setComponents(View view){
 		ImageView dateBg = (ImageView)view.findViewById(R.id.dateBg);
 		dateBg.setImageDrawable(
@@ -127,12 +189,14 @@ public class HomeFragment extends BaseFragment{
 			}
 		}
 		registerForContextMenu(photo);
+        photo.setOnClickListener(new onClickListener());
 
 		// 메시지
 		ImageView bgMessage = (ImageView)view.findViewById(R.id.bgMessage);
 		bgMessage.setImageDrawable(
 				imageLoader.getResizedDrawable(R.drawable.message));
 		bgMessage.setOnLongClickListener(new OnBtnLongClickListener());
+        bgMessage.setOnClickListener(new OnBtnClickListener());
 		ImageView empty_message_top = (ImageView)view.findViewById(R.id.empty_message_top);
 		empty_message_top.setImageDrawable(
 				imageLoader.getResizedDrawable(R.drawable.empty_message_top));
@@ -521,4 +585,20 @@ public class HomeFragment extends BaseFragment{
 			return false;
 		}
 	}
+
+    private class OnBtnClickListener implements OnClickListener{
+        @Override
+        public void onClick(View v) {
+            if(v.getId()==R.id.bgMessage){
+                onUpdateMessageBox();
+            }
+        }
+    }
+
+    private class onClickListener implements OnClickListener {
+        @Override
+        public void onClick(View v) {
+            getActivity().openContextMenu(v);
+        }
+    }
 }

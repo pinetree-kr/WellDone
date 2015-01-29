@@ -1,12 +1,17 @@
 package com.pinetree.welldone.fragments;
 
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
+import android.bluetooth.BluetoothClass;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,6 +32,8 @@ import com.pinetree.welldone.models.PlanModel;
 import com.pinetree.welldone.models.ProfileModel;
 import com.pinetree.welldone.models.PromiseModel;
 import com.pinetree.welldone.receivers.ServiceCaller;
+import com.pinetree.welldone.utils.DBHandler;
+import com.pinetree.welldone.utils.DeviceInfo;
 
 public class PlanFragment extends BaseFragment{
 	protected ImageView btnPromiseAdd;
@@ -46,11 +53,25 @@ public class PlanFragment extends BaseFragment{
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_plan, container, false);
 		
-		setComponents(view);
+		ImageView btnView = setComponents(view);
+        requestPlanSetting((View) btnView);
 		return view;
 	}
-	
-	private void setComponents(View view){
+
+    private void requestPlanSetting(View view) {
+        DeviceInfo di = (DeviceInfo) getActivity().getApplicationContext();
+        if (di.isPlanSet()) return;
+        Context context = getActivity().getApplicationContext();
+        openDialog((Model) view.getTag());
+        Toast.makeText(context, "하루 사용 목표시간을 입력하세요",
+                Toast.LENGTH_LONG).show();
+        Toast.makeText(context, "휴대폰 사용 금지시간 입력도 가능해요",
+                Toast.LENGTH_LONG).show();
+        //KeyEvent kdown = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK);
+        //getActivity().dispatchKeyEvent(kdown);
+    }
+
+    private ImageView setComponents(View view){
 		ImageView dateBg = (ImageView)view.findViewById(R.id.dateBg);
 		dateBg.setImageDrawable(
 				imageLoader.getResizedDrawable(R.drawable.bar));
@@ -62,13 +83,14 @@ public class PlanFragment extends BaseFragment{
 		ImageView statusBg = (ImageView)view.findViewById(R.id.bgPlan);
 		statusBg.setImageDrawable(
 				imageLoader.getResizedDrawable(R.drawable.plan));
-		
+
+        // TODO: Check: btnPlanMod will be used as a return variable. Is it OK?
 		ImageView btnPlanMod = (ImageView)view.findViewById(R.id.btnPlanMod);
 		btnPlanMod.setImageDrawable(
 				imageLoader.getResizedDrawable(R.drawable.plan_mod));
 		btnPlanMod.setTag(app.getPlan());
 		btnPlanMod.setOnClickListener(new OnBtnClickListener());
-		
+
 		planTime = (TextView)view.findViewById(R.id.PlanTime);
 		
 		//등대
@@ -102,7 +124,19 @@ public class PlanFragment extends BaseFragment{
 		btnPromiseAdd.setOnClickListener(new OnBtnClickListener());
 		
 		promiseList = (LinearLayout)view.findViewById(R.id.PromiseList);
-		
+
+        // TODO: change password
+        ImageView passwdBg = (ImageView)view.findViewById(R.id.bgPasswd);
+        passwdBg.setImageDrawable(
+                imageLoader.getResizedDrawable(R.drawable.passwd));
+        ImageView btnPasswdMod = (ImageView)view.findViewById(R.id.btnPasswdMod);
+        btnPasswdMod.setImageDrawable(
+                imageLoader.getResizedDrawable(R.drawable.passwd_mod));
+        Log.i("DebugPrint", "Change password");
+        btnPasswdMod.setTag(new ProfileModel());
+        btnPasswdMod.setOnClickListener(new OnBtnClickListener());
+
+        return btnPlanMod;
 	}
 	private void updateView(){
 		PlanModel plan = app.getPlan();
@@ -228,7 +262,14 @@ public class PlanFragment extends BaseFragment{
 						getActivity().getApplicationContext(),
 						"실시간 앱체킹을 종료합니다", Toast.LENGTH_LONG).show();
 				}
-			}
+/*
+                // Just for debugging purpose; remove it for release version!!!
+                // open DB
+                DBHandler handler = DBHandler.getInstance(getActivity().getApplicationContext(), false);
+                handler.EraseRows();
+                Log.i("DebugPrint", "Erasing all logs");
+*/
+            }
 			
 		}
 		else if(data.getClass().equals(PromiseModel.class)){		
@@ -271,12 +312,16 @@ public class PlanFragment extends BaseFragment{
 			}
 			else if(object.getClass().equals(PlanModel.class)){
 				//openDialog(object);
-				onCheckPasswd(object);
+				onCheckPasswd(object, "promise");
 			}
+            else if(object.getClass().equals(ProfileModel.class)){
+                //Log.i("DebugPrint", "Reset passwd request");
+                onCheckPasswd(object, "passwd");
+            }
 		}
 	}
-	
-	private void onCheckPasswd(final Model object){
+
+	private void onCheckPasswd(final Model object, final String action){
 		final ProfileModel profile = app.getProfile();
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 
@@ -300,7 +345,12 @@ public class PlanFragment extends BaseFragment{
 			public void onClick(DialogInterface dialog, int which) {
 				String text = passwd.getText().toString();
 				if(text.equals(profile.getPasswd())){
-					openDialog(object);
+                    if (action.equals("promise")) {
+                        openDialog(object);
+                    } else if (action.equals("passwd")) {
+                        app.getProfile().setPasswd("");
+                        setPasswd(profile);
+                    }
 				}else{
 					Toast.makeText(getActivity(), R.string.wrong_passwd, Toast.LENGTH_LONG).show();
 				}
@@ -313,12 +363,85 @@ public class PlanFragment extends BaseFragment{
 		});
 		alert.show();
 	}
-	
+
 	protected void openDialog(Model object){
 		PlanDialogFragment dialog = PlanDialogFragment.getInstances(object);
 		dialog.setTargetFragment(this, 0);
 		dialog.show(getFragmentManager(), "planDialog");
 	}
-	
-	
+
+    //패스워드 입력
+    // This is almost exact the same copy from SplashFragment, but who cares...
+    private void setPasswd(final ProfileModel profile){
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+        View view = inflater.inflate(R.layout.alertdialog_passwd, null);
+
+        TextView checkPasswd = (TextView)view.findViewById(R.id.checkPasswd);
+        fontLoader.setTextViewTypeFace(
+                checkPasswd,
+                R.string.set_passwd,
+                R.string.NanumGothic,
+                (float)8.0);
+
+        final EditText passwd = (EditText)view.findViewById(R.id.textPassword);
+        passwd.setHint(R.string.passwd_message);
+
+        alert.setView(view);
+
+        alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String text = passwd.getText().toString();
+
+                if(!text.equals("")){
+                    profile.setPasswd(text);
+                    setPasswd2(profile);
+                }else{
+                    setPasswd(profile);
+                }
+            }
+        });
+        alert.show();
+    }
+
+    // 재확인
+    private void setPasswd2(final ProfileModel profile){
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+        View view = inflater.inflate(R.layout.alertdialog_passwd, null);
+
+        TextView checkPasswd = (TextView)view.findViewById(R.id.checkPasswd);
+        fontLoader.setTextViewTypeFace(
+                checkPasswd,
+                R.string.set_passwd2,
+                R.string.NanumGothic,
+                (float)8.0);
+
+        final EditText passwd = (EditText)view.findViewById(R.id.textPassword);
+        passwd.setHint(R.string.passwd_message);
+
+        alert.setView(view);
+
+        alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String text = passwd.getText().toString();
+
+                if(!text.equals("")
+                        && text.equals(profile.getPasswd())){
+                    app.updateProfile(profile);
+                    Toast.makeText(getActivity(), R.string.save_passwd, Toast.LENGTH_LONG).show();
+                }else{
+                    profile.setPasswd("");
+                    Toast.makeText(getActivity(), R.string.not_equal, Toast.LENGTH_LONG).show();
+                    setPasswd(profile);
+                }
+            }
+        });
+        alert.show();
+    }
+
 }

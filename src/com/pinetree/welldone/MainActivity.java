@@ -3,6 +3,8 @@ package com.pinetree.welldone;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -12,6 +14,8 @@ import com.pinetree.welldone.fragments.PlanFragment;
 import com.pinetree.welldone.fragments.ResultFragment;
 import com.pinetree.welldone.fragments.StatusFragment;
 import com.pinetree.welldone.models.Model;
+import com.pinetree.welldone.models.PlanModel;
+import com.pinetree.welldone.utils.DeviceInfo;
 
 public class MainActivity extends BaseActivity {
 	
@@ -43,13 +47,25 @@ public class MainActivity extends BaseActivity {
         setTabMenu();
         
         if(savedInstanceState == null){
-        	Fragment fragment = new HomeFragment();
-        	currentFragment = "home";
+            Fragment fragment;
+            if (isPlanSet()) {
+                fragment = new HomeFragment();
+                currentFragment = "home";
+            } else {
+                fragment = new PlanFragment();
+                currentFragment = "plan";
+            }
 			switchFragment(fragment, true);
 		}
 	}
-	
-	private void setTabMenu(){
+
+    private boolean isPlanSet() {
+        DeviceInfo app;
+        app = (DeviceInfo) this.getApplicationContext();
+        return app.isPlanSet();
+    }
+
+    private void setTabMenu(){
 		ImageView imageBg = (ImageView)findViewById(R.id.tabBg);
 		
 		imageBg.setImageDrawable(
@@ -106,4 +122,18 @@ public class MainActivity extends BaseActivity {
 		BaseFragmentListener listener = (BaseFragmentListener)dialog.getTargetFragment();
 		listener.onDialogClick(data);
 	}
+
+    @Override
+    public void onBackPressed() {
+        if(!currentFragment.equals("home")) {
+            Fragment fragment = new HomeFragment();
+            if(fragment!=null) {
+                currentFragment = "home";
+                switchFragment(fragment, true);
+            }
+            else finish();
+        } else {
+            finish();
+        }
+    }
 }

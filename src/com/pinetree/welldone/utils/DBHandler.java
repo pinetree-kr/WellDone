@@ -69,7 +69,7 @@ public class DBHandler extends BaseDBHandler{
 		values.put("usage_time", newLog.getUsage());
 		values.put("limit_time", newLog.getLimit());
 		values.put("apps", newLog.getApps());
-		rv = db.insert("Logs", null, values);
+		rv = db.insertWithOnConflict("Logs", null, values, SQLiteDatabase.CONFLICT_REPLACE);
 		if(rv<0){
 			throw new SQLException("log add Error:"+values);
 		}
@@ -157,4 +157,17 @@ public class DBHandler extends BaseDBHandler{
 		
 		return objects;
 	}
+	
+	public boolean isLogged(String Date){
+        boolean ret;
+        String sql = "SELECT * FROM Logs WHERE log_date=" + Date;
+        Cursor cursor = db.rawQuery(sql, null);
+
+        ret = cursor.getCount() > 0;
+        cursor.close();
+        return ret;
+	}
+    public void EraseRows(){
+        db.delete("Logs", null, null);
+    }
 }

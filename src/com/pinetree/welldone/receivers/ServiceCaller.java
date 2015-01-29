@@ -1,11 +1,15 @@
 package com.pinetree.welldone.receivers;
 
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.List;
 
+import com.pinetree.welldone.models.LogModel;
 import com.pinetree.welldone.services.AppCounterService;
 import com.pinetree.welldone.services.LogService;
+import com.pinetree.welldone.utils.DBHandler;
+import com.pinetree.welldone.utils.DeviceInfo;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
@@ -16,6 +20,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -59,6 +65,53 @@ public class ServiceCaller {
             
             if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
             	Log.i("DebugPrint", "rebooted");
+                // On reboot, check whether past days have to be logged
+                // This is better done in the background before starting any services
+
+                // today (right now)
+                Calendar cal = Calendar.getInstance();
+                // get install date (00:00:00 on the installation day)
+                Calendar ical = Calendar.getInstance();
+                DeviceInfo d = (DeviceInfo) context.getApplicationContext();
+                long installed = d.installTimeInMillis();
+                if (installed > 0) ical.setTimeInMillis(installed);
+                ical.set(Calendar.MILLISECOND, 0);
+                ical.set(Calendar.SECOND, 0);
+                ical.set(Calendar.MINUTE, 0);
+                ical.set(Calendar.HOUR_OF_DAY, 0);
+                installed = ical.getTimeInMillis();
+
+                // open DB
+                DBHandler handler = DBHandler.getInstance(context.getApplicationContext(), false);
+
+                // query the past info
+                int skipped = -1;
+                String past;
+                do {
+                    skipped++;
+                    cal.add(Calendar.DATE, -1);
+                    past = String.format("%04d%02d%02d", cal.get(Calendar.YEAR),
+                            cal.get(Calendar.MONTH)+1, cal.get(Calendar.DAY_OF_MONTH));
+                } while ( !handler.isLogged(past) && (installed < cal.getTimeInMillis()) );
+                // Now, cal points to one day prior to the last logged date or to the install/update
+                // date, whichever is later.
+                // Variable "skipped" contains how many days should be added to the log
+
+                // Log with the current data and charge it to the earliest day,
+                // namely, the earliest unlogged date or the installation date.
+                DeviceInfo app = (DeviceInfo) context.getApplicationContext();
+                for (int i = 0; i < skipped; i++) {
+                    cal.add(Calendar.DATE, 1);
+                    LogModel newLog = new LogModel();
+                    newLog.setDate(cal);
+                    newLog.setLog(app.getPlan(), app.getJSONUsedApps().toString());
+                    if(handler.addLog(newLog)>0){
+                        app.initPlan();
+                        app.initUsedApps();
+                    }
+                }
+                // Done with the DB baby-sitting!
+
                 ServiceCaller.getInstance().startCall(context);
                 ServiceCaller.getInstance().startAlarm(context);
             }

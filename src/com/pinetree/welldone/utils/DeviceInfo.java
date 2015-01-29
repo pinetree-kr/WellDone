@@ -1,5 +1,6 @@
 package com.pinetree.welldone.utils;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -14,7 +15,9 @@ import org.json.JSONObject;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.os.PowerManager;
@@ -55,6 +58,19 @@ public class DeviceInfo extends Application{
 		return version;
 	}
 	
+    public long installTimeInMillis() {
+        long installed;
+        try {
+            ApplicationInfo i = this.getApplicationContext().getPackageManager().getApplicationInfo("com.pinetree.welldone", 0);
+            String appFile = i.sourceDir;
+            installed = new File(appFile).lastModified();
+        } catch (PackageManager.NameNotFoundException e) {
+            installed = -1;
+            e.printStackTrace();
+        }
+        return installed;
+    }
+
 	public double getWidth(){
 		return (double)deviceWidth;
 	}
@@ -127,6 +143,19 @@ public class DeviceInfo extends Application{
 		}
 		return plan;
 	}
+    public boolean isPlanSet() {
+        JSONObject object = getJSONPlan();
+        boolean ret = false;
+        try {
+            long time = 0;
+            if (object.has("time"))
+                time = object.getLong("time");
+            ret = time > 0;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return ret;
+    }
 	
 	// TODO :여기서 약속 체킹
 	public PromiseModel checkPromise(){
