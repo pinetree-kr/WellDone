@@ -8,8 +8,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 
-import com.pinetree.utils.FontLoader;
-import com.pinetree.utils.ImageLoader;
+import com.pinetree.library.utils.FontLoader;
+import com.pinetree.library.utils.ImageLoader;
 import com.pinetree.welldone.fragments.BaseDialogFragment.DialogFragmentListener;
 import com.pinetree.welldone.handlers.SwitchActivityHandler;
 import com.pinetree.welldone.handlers.SwitchFragmentHandler;

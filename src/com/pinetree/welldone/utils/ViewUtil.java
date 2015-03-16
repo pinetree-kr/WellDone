@@ -5,9 +5,7 @@ import java.util.Calendar;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -17,10 +15,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.pinetree.utils.ImageLoader;
+import com.pinetree.library.utils.ImageLoader;
 import com.pinetree.welldone.R;
 import com.pinetree.welldone.fragments.ResultDialogFragment;
-import com.pinetree.welldone.fragments.ResultFragment;
 import com.pinetree.welldone.models.LogModel;
 
 public class ViewUtil {

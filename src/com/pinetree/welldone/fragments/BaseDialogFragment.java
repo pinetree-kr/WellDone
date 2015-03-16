@@ -2,10 +2,9 @@ package com.pinetree.welldone.fragments;
 
 import android.app.Activity;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 
-import com.pinetree.utils.FontLoader;
-import com.pinetree.utils.ImageLoader;
+import com.pinetree.library.utils.FontLoader;
+import com.pinetree.library.utils.ImageLoader;
 import com.pinetree.welldone.models.Model;
 import com.pinetree.welldone.utils.DeviceInfo;
 

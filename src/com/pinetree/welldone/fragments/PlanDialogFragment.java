@@ -295,7 +295,8 @@ public class PlanDialogFragment extends BaseDialogFragment {
 					/**/
 					promise.setEndTime(
 							end.getCurrentHour(),
-							end.getCurrentMinute());						
+							end.getCurrentMinute());
+					promise.setLock(true);
 					updatePromise(promise);
 				}
 			});
@@ -317,6 +318,7 @@ public class PlanDialogFragment extends BaseDialogFragment {
 				public void onClick(DialogInterface dialog, int which) {
 					PromiseModel promise = (PromiseModel)object;
 					promise.setDayType(repeat.getValue());
+					promise.setLock(true);
 					updatePromise(promise);
 				}
 			});

@@ -20,10 +20,11 @@ import android.widget.TextView;
 import com.pinetree.welldone.R;
 import com.pinetree.welldone.models.PackageModel.RunningApp;
 import com.pinetree.welldone.models.PlanModel;
+import com.pinetree.welldone.models.ProfileModel;
 
 public class StatusFragment extends BaseFragment{
 	protected AnimationDrawable ad;
-	protected ImageView titleBar, profile, circle;
+	protected ImageView titleBar, profile, circle, btnListExpand;
 	protected TextView status, usageTime;
 	protected ViewGroup listApp;
 	
@@ -92,7 +93,68 @@ public class StatusFragment extends BaseFragment{
 		appTimeBg.setImageDrawable(imageLoader.getResizedDrawable(R.drawable.app_time));
 		
 		listApp = (LinearLayout)view.findViewById(R.id.ListApp);
-		
+
+		ImageView listTail = (ImageView)view.findViewById(R.id.imageListTail);
+		listTail.setImageDrawable(
+				imageLoader.getResizedDrawable(R.drawable.list));
+		btnListExpand = (ImageView)view.findViewById(R.id.btnListExpand);
+		updateButton();
+//		if ( (app.getProfile().getNStatusList() >= 0 && getWantedAppNum() > 3) ||
+//				(app.getProfile().getNStatusList() < 0 && app.getUsedApps().size() > 3) )
+//			btnListExpand.setOnClickListener(new onBtnClickListener());
+		btnListExpand.setOnLongClickListener(new onBtnLongClickListener());
+	}
+	protected class onBtnClickListener implements View.OnClickListener {
+		@Override
+		public void onClick(View v) {
+            // There is only one clickable right now.
+            // If it increases in the future, R.Id should be checked...
+			// toggle nstatuslist
+			ProfileModel profile = app.getProfile();
+			if (profile.getNStatusList() == 3) {
+				profile.setNStatusList(0);
+			} else {
+				profile.setNStatusList(3);
+			}
+			app.updateProfile(profile);
+
+			updateAppStatus(profile.getNStatusList());
+			updateButton();
+		}
+	}
+    private class onBtnLongClickListener implements View.OnLongClickListener {
+        @Override
+        public boolean onLongClick(View v) {
+            // toggle nstatuslist
+            ProfileModel profile = app.getProfile();
+            if (profile.getNStatusList() == -1) {
+                profile.setNStatusList(3);
+            } else {
+                profile.setNStatusList(-1);
+            }
+            app.updateProfile(profile);
+
+            updateAppStatus(profile.getNStatusList());
+            updateButton();
+            return true;
+        }
+    }
+	private void updateButton(){
+		ProfileModel profile = app.getProfile();
+		if ( (profile.getNStatusList() == 0 && getWantedAppNum() > 3) ||
+				(profile.getNStatusList() < 0 && app.getUsedApps().size() > 3) ) {
+			btnListExpand.setImageDrawable(
+					imageLoader.getResizedDrawable(R.drawable.list_shrink));
+			btnListExpand.setOnClickListener(new onBtnClickListener());
+		}
+		else if (profile.getNStatusList() > 0 && getWantedAppNum() > 3) {
+			btnListExpand.setImageDrawable(
+					imageLoader.getResizedDrawable(R.drawable.list_expand));
+			btnListExpand.setOnClickListener(new onBtnClickListener());
+		}
+		else
+			btnListExpand.setImageDrawable(
+					imageLoader.getResizedDrawable(R.drawable.list_blank));
 	}
 	private void updateView(){
 		PlanModel plan = app.getPlan();
@@ -102,16 +164,41 @@ public class StatusFragment extends BaseFragment{
 		fontLoader.setTextViewTextSize(usageTime, plan.getUsageFormat(), (float)20.0);
 		
 		updateCircle(plan.getUsageRate());
-		updateAppStatus();		
+		ProfileModel profile = app.getProfile();
+		updateAppStatus(profile.getNStatusList());
 	}
-	
-	private void updateAppStatus(){
-		ArrayList<RunningApp> apps = app.getUsedApps(3);
+
+    private int getWantedAppNum(){
+        ArrayList<RunningApp> apps = app.getUsedApps();
+        int ret = 0;
+        for(int i=0; i < apps.size(); i++){
+            if (isNotWanted(apps.get(i).getPkgName())) continue;
+            ret++;
+        }
+        return ret;
+    }
+	private void updateAppStatus(int N){
+		ArrayList<RunningApp> apps = app.getUsedApps(/*3*/);
 		listApp.removeAllViews();
-		for(int i=0; i<apps.size(); i++){
-			this.addAppInfo((LinearLayout)listApp, apps.get(i), i);
+		int limit, count = 0;
+		if (N <= 0) limit = apps.size();
+		else if (N < apps.size()) limit = N;
+		else limit = apps.size();
+
+		for(int i=0; (i < apps.size() && count < limit); i++){
+			//if (apps.get(i).getTime() > 0) // TODO: why doesn't it work??
+            if (N >= 0 && isNotWanted(apps.get(i).getPkgName())) continue;
+			this.addAppInfo((LinearLayout)listApp, apps.get(i), count);
+			count++;
 		}
 	}
+    private boolean isNotWanted(String pkgName) {
+        if (pkgName.equals("com.pinetree.welldone")) return true;
+        if (pkgName.equals("com.android.systemui")) return true;
+        if (pkgName.equals("com.android.launcher")) return true;
+        if (pkgName.contains("launcher")) return true;
+        return false;
+    }
 	private void updateCircle(int rate){
 		String[] frameIds = getResources().getStringArray(R.array.circle_images);
 		int i = (int)((frameIds.length-1) * (rate/100.0));

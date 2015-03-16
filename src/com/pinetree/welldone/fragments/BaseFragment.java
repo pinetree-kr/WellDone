@@ -1,18 +1,11 @@
 package com.pinetree.welldone.fragments;
 
-import java.util.Locale;
-
 import android.app.Activity;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
-import com.pinetree.utils.FontLoader;
-import com.pinetree.utils.ImageLoader;
-import com.pinetree.welldone.R;
+import com.pinetree.library.utils.FontLoader;
+import com.pinetree.library.utils.ImageLoader;
 import com.pinetree.welldone.BaseActivity.BaseFragmentListener;
 import com.pinetree.welldone.interfaces.SwitchActivityInterface;
 import com.pinetree.welldone.interfaces.SwitchFragmentInterface;

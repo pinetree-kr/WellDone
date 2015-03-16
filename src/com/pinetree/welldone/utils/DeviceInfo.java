@@ -20,13 +20,12 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
-import android.os.PowerManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
-import com.pinetree.objects.RemovableJSONArray;
+import com.pinetree.library.objects.RemovableJSONArray;
 import com.pinetree.welldone.models.LogModel;
 import com.pinetree.welldone.models.PackageModel.RunningApp;
 import com.pinetree.welldone.models.PackageModel.RunningApp.AppUsageDescCompare;
@@ -58,18 +57,18 @@ public class DeviceInfo extends Application{
 		return version;
 	}
 	
-    public long installTimeInMillis() {
-        long installed;
-        try {
-            ApplicationInfo i = this.getApplicationContext().getPackageManager().getApplicationInfo("com.pinetree.welldone", 0);
-            String appFile = i.sourceDir;
-            installed = new File(appFile).lastModified();
-        } catch (PackageManager.NameNotFoundException e) {
-            installed = -1;
-            e.printStackTrace();
-        }
-        return installed;
-    }
+	public long installTimeInMillis() {
+		long installed;
+		try {
+			ApplicationInfo i = this.getApplicationContext().getPackageManager().getApplicationInfo("com.pinetree.welldone", 0);
+			String appFile = i.sourceDir;
+			installed = new File(appFile).lastModified();
+		} catch (PackageManager.NameNotFoundException e) {
+			installed = -1;
+			e.printStackTrace();
+		}
+		return installed;
+	}
 
 	public double getWidth(){
 		return (double)deviceWidth;
@@ -143,22 +142,22 @@ public class DeviceInfo extends Application{
 		}
 		return plan;
 	}
-    public boolean isPlanSet() {
-        JSONObject object = getJSONPlan();
-        boolean ret = false;
-        try {
-            long time = 0;
-            if (object.has("time"))
-                time = object.getLong("time");
-            ret = time > 0;
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return ret;
-    }
+	public boolean isPlanSet() {
+		JSONObject object = getJSONPlan();
+		boolean ret = false;
+		try {
+			long time = 0;
+			if (object.has("time"))
+				time = object.getLong("time");
+			ret = time > 0;
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return ret;
+	}
 	
 	// TODO :여기서 약속 체킹
-	public PromiseModel checkPromise(){
+	public PromiseModel checkPromise(boolean lockedOnly){
 		ArrayList<PromiseModel> promises = getPromises();
 		PromiseModel promise = null;
 		Calendar cal = Calendar.getInstance();
@@ -171,13 +170,13 @@ public class DeviceInfo extends Application{
 		
 		for(int i=0; i<promises.size(); i++){
 			promise = promises.get(i);
-			if(promise.checkPromise(hour, min, dayOfWeek)){
+			if(promise.checkPromise(hour, min, dayOfWeek, lockedOnly)){
 				return promise;
 			}
 		}
 		return null;
 	}
-	
+
 	/*
 	 * 자신과의 약속과 관련된 정보 업데이트/가져오기
 	 */
@@ -300,7 +299,7 @@ public class DeviceInfo extends Application{
 	/*
 	 * 어플 사용량과 관련된 정보 업데이트/가져오기
 	 */
-	public ArrayList<RunningApp> getUsedApps(int size){
+	public ArrayList<RunningApp> getUsedApps(/*int size*/){
 		ArrayList<RunningApp> apps = new ArrayList<RunningApp>();
 		try {
 			JSONObject json = getJSONUsedApps();
@@ -322,9 +321,9 @@ public class DeviceInfo extends Application{
 		//TODO : 앱순서
 		Collections.sort(apps, new AppUsageDescCompare());
 		//Collections.sort(apps, new AppCountDescCompare());
-		for(int i=apps.size()-1; i>=size; i--){
-			apps.remove(i);
-		}
+		//for(int i=apps.size()-1; i>=size; i--){
+			//apps.remove(i);
+		//}
 		return apps;
 	}
 	public void initPlan(){
@@ -432,7 +431,8 @@ public class DeviceInfo extends Application{
 		try {
 			object.put("filepath", profile.getFilePath());
 			object.put("message", profile.getMessage());
-			object.put("passwd", profile.getPasswd());			
+			object.put("passwd", profile.getPasswd());
+			object.put("nstatuslist", profile.getNStatusList());
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -446,6 +446,7 @@ public class DeviceInfo extends Application{
 		JSONObject object = getJSONProfile();
 		try {
 			String filePath = "", message = "", passwd = "";
+			int nStatusList = 3;
 			if(object.has("filepath"))
 				filePath = object.getString("filepath");
 			profile.setFilePath(filePath);
@@ -457,6 +458,10 @@ public class DeviceInfo extends Application{
 				passwd = object.getString("passwd");
 			}
 			profile.setPasswd(passwd);
+			if(object.has("nstatuslist")){
+				nStatusList = object.getInt("nstatuslist");
+			}
+			profile.setNStatusList(nStatusList);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

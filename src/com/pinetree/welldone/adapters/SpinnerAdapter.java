@@ -10,9 +10,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.pinetree.utils.FontLoader;
-import com.pinetree.utils.ImageLoader;
-import com.pinetree.utils.ViewHolder;
+import com.pinetree.library.utils.FontLoader;
+import com.pinetree.library.utils.ImageLoader;
+import com.pinetree.library.utils.ViewHolder;
 import com.pinetree.welldone.R;
 import com.pinetree.welldone.utils.DeviceInfo;
 

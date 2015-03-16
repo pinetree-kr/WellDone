@@ -1,13 +1,11 @@
 package com.pinetree.welldone.utils;
 
 import android.content.Context;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
-import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
-import com.pinetree.dbutils.BaseDBHelper;
+import com.pinetree.library.dbutils.BaseDBHelper;
 
 public class DBHelper extends BaseDBHelper{
 	protected static String DB_NAME = "WellDone";

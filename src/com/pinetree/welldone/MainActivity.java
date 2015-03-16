@@ -1,5 +1,6 @@
 package com.pinetree.welldone;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -8,6 +9,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.pinetree.welldone.fragments.HomeFragment;
 import com.pinetree.welldone.fragments.PlanFragment;
@@ -19,7 +21,11 @@ import com.pinetree.welldone.utils.DeviceInfo;
 
 public class MainActivity extends BaseActivity {
 	
-	private String currentFragment; 
+	private String currentFragment;
+	private boolean FromNotification;
+	private long backKeyPressedTime = 0;
+	private Toast backToast;
+	private static boolean isItRunning = false;
 	
 	private Integer[] tabIconRes ={
 		R.drawable.tab_01,
@@ -45,32 +51,49 @@ public class MainActivity extends BaseActivity {
         //getApps();
         // Set TabMenu
         setTabMenu();
-        
+
+        Intent intent = this.getIntent();
+        Bundle args = intent.getExtras();
+        // should finish when started from notification and it was already running
+        FromNotification = false;
+        if (args != null)
+            FromNotification = args.getBoolean("FromNotification");
         if(savedInstanceState == null){
             Fragment fragment;
             if (isPlanSet()) {
-                fragment = new HomeFragment();
-                currentFragment = "home";
+                if (FromNotification) {
+                    fragment = new StatusFragment();
+                    currentFragment = "status";
+                } else {
+                    fragment = new HomeFragment();
+                    currentFragment = "home";
+                }
             } else {
                 fragment = new PlanFragment();
                 currentFragment = "plan";
             }
 			switchFragment(fragment, true);
+		} else {
+		    currentFragment = savedInstanceState.getString("currentFragment");
 		}
+
+		isItRunning = true;
+
 	}
 
-    private boolean isPlanSet() {
-        DeviceInfo app;
-        app = (DeviceInfo) this.getApplicationContext();
-        return app.isPlanSet();
-    }
+	private boolean isPlanSet() {
+		DeviceInfo app;
+		app = (DeviceInfo) this.getApplicationContext();
+		return app.isPlanSet();
+	}
 
     private void setTabMenu(){
 		ImageView imageBg = (ImageView)findViewById(R.id.tabBg);
-		
+
 		imageBg.setImageDrawable(
 				imageLoader.getResizedDrawable(R.drawable.main_frame));
-		
+        //Log.i("DebugPrint", "Screen size: " + String.format("%05d %05d", imageBg.getWidth(), imageBg.getHeight()));
+
 		ImageView[] menu = new ImageView[4];
 		for(int i=0; i<menu.length; i++){
 			menu[i] = (ImageView) findViewById(tabBtnId[i]);
@@ -123,17 +146,31 @@ public class MainActivity extends BaseActivity {
 		listener.onDialogClick(data);
 	}
 
-    @Override
-    public void onBackPressed() {
-        if(!currentFragment.equals("home")) {
-            Fragment fragment = new HomeFragment();
-            if(fragment!=null) {
-                currentFragment = "home";
-                switchFragment(fragment, true);
-            }
-            else finish();
-        } else {
-            finish();
-        }
-    }
+	@Override
+	public void onBackPressed() {
+		String msg = "'뒤로'버튼을 한번 더 누르시면 종료됩니다.";
+		long currTime = System.currentTimeMillis();
+		// initial backKeyPressedTime (0) is at the epoch and is way way earlier than currTime
+		if (FromNotification) myFinish();
+		else if (currTime > backKeyPressedTime + 3500) {
+			backKeyPressedTime = currTime;
+			backToast = Toast.makeText(this.getApplicationContext(), msg, Toast.LENGTH_LONG);
+			backToast.show();
+		} else {
+			if (backToast != null) backToast.cancel();
+			myFinish();
+		}
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+		savedInstanceState.putString("currentFragment", currentFragment);
+	}
+
+	private void myFinish() {
+		isItRunning = false;
+		finish();
+	}
+	public static boolean isRunning() {return isItRunning;}
 }

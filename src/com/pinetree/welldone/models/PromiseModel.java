@@ -21,9 +21,9 @@ public class PromiseModel extends Model{
 		index = 0;
 		subject = "";
 		/*
-		 * 0:일
-		 * ~6:토
-		 * -1:매일
+		 * 0~6:일...토
+		 * 7:매일
+		 * 8:주중, 9:주말
 		 */
 		day_type = 7;
 		startHour = 0;
@@ -61,6 +61,8 @@ public class PromiseModel extends Model{
 		objects.add("금요일");
 		objects.add("토요일");
 		objects.add("매일");
+		objects.add("주중");
+		objects.add("주말");
 		return objects;
 	}
 	public String[] getAlarmRepeatArray(){
@@ -141,11 +143,20 @@ public class PromiseModel extends Model{
 		return day_type;
 	}
 	
-	public boolean checkPromise(int hour, int min, int dayOfWeek){
+	public boolean checkPromise(int hour, int min, int dayOfWeek, boolean lockedOnly){
+		/* logical table
+		isLock  lockedOnly  =>  (isLock || !lockedOnly)
+		true    true        =>      true
+		true    false       =>      true
+		false   true        =>      false
+		false   false       =>      true
+		 */
 		long checkTime = (int)(hour*HOUR) + (int)(min*MIN);
-		if(checkTime>=getStart() && checkTime<=getEnd() && isLock){
-			if(day_type==7 || (day_type)==dayOfWeek)
-				return true;
+		if(checkTime>=getStart() && checkTime<=getEnd() && (isLock || !lockedOnly)){
+			if(day_type==dayOfWeek) return true; // weekday match
+			if(day_type==7) return true; // everyday match
+			if(day_type==8 && (dayOfWeek>0 && dayOfWeek<6)) return true; // Mon ... Fri
+			if(day_type==9 && (dayOfWeek==0 || dayOfWeek==6)) return true; // Sun or Sat
 		}
 		return false;
 		

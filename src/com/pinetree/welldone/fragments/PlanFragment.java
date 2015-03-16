@@ -34,6 +34,7 @@ import com.pinetree.welldone.models.PromiseModel;
 import com.pinetree.welldone.receivers.ServiceCaller;
 import com.pinetree.welldone.utils.DBHandler;
 import com.pinetree.welldone.utils.DeviceInfo;
+import com.pinetree.welldone.utils.PasswdUtil;
 
 public class PlanFragment extends BaseFragment{
 	protected ImageView btnPromiseAdd;
@@ -301,13 +302,19 @@ public class PlanFragment extends BaseFragment{
 			Model object = (Model)v.getTag();
 			
 			if(object.getClass().equals(PromiseModel.class)){
-				if(app.getPromises(5).size()<5){
-					openDialog(object);
-					//onCheckPasswd(object);
-				}else{
-					Toast.makeText(
-							getActivity().getApplicationContext(),
-							"5개까지 등록가능합니다", Toast.LENGTH_LONG).show();
+				if(v.getId()==R.id.btnPromiseAdd) {
+					if (app.getPromises(5).size() < 5) {
+						openDialog(object);
+						//onCheckPasswd(object);
+					} else {
+						Toast.makeText(
+								getActivity().getApplicationContext(),
+								"5개까지 등록가능합니다", Toast.LENGTH_LONG).show();
+					}
+				} else {
+					registerForContextMenu(v);
+					getActivity().openContextMenu(v);
+					unregisterForContextMenu(v);
 				}
 			}
 			else if(object.getClass().equals(PlanModel.class)){
@@ -349,7 +356,7 @@ public class PlanFragment extends BaseFragment{
                         openDialog(object);
                     } else if (action.equals("passwd")) {
                         app.getProfile().setPasswd("");
-                        setPasswd(profile);
+	                    PasswdUtil.setPasswd(getActivity(), fontLoader, profile);
                     }
 				}else{
 					Toast.makeText(getActivity(), R.string.wrong_passwd, Toast.LENGTH_LONG).show();
@@ -369,79 +376,4 @@ public class PlanFragment extends BaseFragment{
 		dialog.setTargetFragment(this, 0);
 		dialog.show(getFragmentManager(), "planDialog");
 	}
-
-    //패스워드 입력
-    // This is almost exact the same copy from SplashFragment, but who cares...
-    private void setPasswd(final ProfileModel profile){
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-
-        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-        View view = inflater.inflate(R.layout.alertdialog_passwd, null);
-
-        TextView checkPasswd = (TextView)view.findViewById(R.id.checkPasswd);
-        fontLoader.setTextViewTypeFace(
-                checkPasswd,
-                R.string.set_passwd,
-                R.string.NanumGothic,
-                (float)8.0);
-
-        final EditText passwd = (EditText)view.findViewById(R.id.textPassword);
-        passwd.setHint(R.string.passwd_message);
-
-        alert.setView(view);
-
-        alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String text = passwd.getText().toString();
-
-                if(!text.equals("")){
-                    profile.setPasswd(text);
-                    setPasswd2(profile);
-                }else{
-                    setPasswd(profile);
-                }
-            }
-        });
-        alert.show();
-    }
-
-    // 재확인
-    private void setPasswd2(final ProfileModel profile){
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-
-        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-        View view = inflater.inflate(R.layout.alertdialog_passwd, null);
-
-        TextView checkPasswd = (TextView)view.findViewById(R.id.checkPasswd);
-        fontLoader.setTextViewTypeFace(
-                checkPasswd,
-                R.string.set_passwd2,
-                R.string.NanumGothic,
-                (float)8.0);
-
-        final EditText passwd = (EditText)view.findViewById(R.id.textPassword);
-        passwd.setHint(R.string.passwd_message);
-
-        alert.setView(view);
-
-        alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String text = passwd.getText().toString();
-
-                if(!text.equals("")
-                        && text.equals(profile.getPasswd())){
-                    app.updateProfile(profile);
-                    Toast.makeText(getActivity(), R.string.save_passwd, Toast.LENGTH_LONG).show();
-                }else{
-                    profile.setPasswd("");
-                    Toast.makeText(getActivity(), R.string.not_equal, Toast.LENGTH_LONG).show();
-                    setPasswd(profile);
-                }
-            }
-        });
-        alert.show();
-    }
-
 }

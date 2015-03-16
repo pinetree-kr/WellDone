@@ -33,7 +33,8 @@ public class LockActivity extends BaseActivity {
 		super.onResume();
 		PromiseModel promise = (PromiseModel)getIntent().getSerializableExtra("promise");
 		
-		Fragment fragment = new LockFragment(promise);
+		//Fragment fragment = new LockFragment(promise);
+		Fragment fragment = LockFragment.newInstance(promise);
 		switchFragment(fragment, true);
 
 		// 화면꺼짐의 브로드캐스트 등록
@@ -53,6 +54,7 @@ public class LockActivity extends BaseActivity {
 	protected void onNewIntent(Intent newIntent){
 		super.onNewIntent(newIntent);
 		this.setIntent(newIntent);
+		if(newIntent.getExtras().getBoolean("unlock")) finish();
 	}
 	
 	// 화면 꺼짐의 브로드캐스트 등록
@@ -70,5 +72,10 @@ public class LockActivity extends BaseActivity {
 	public void onDialogClick(DialogFragment dialog, Model data) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void onBackPressed() {
+		// do nothing!
 	}
 }

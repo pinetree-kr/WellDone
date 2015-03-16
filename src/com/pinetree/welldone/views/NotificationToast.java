@@ -8,8 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.pinetree.utils.FontLoader;
-import com.pinetree.utils.ImageLoader;
+import com.pinetree.library.utils.FontLoader;
+import com.pinetree.library.utils.ImageLoader;
 import com.pinetree.welldone.R;
 import com.pinetree.welldone.models.PlanModel;
 import com.pinetree.welldone.utils.DeviceInfo;

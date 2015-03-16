@@ -8,10 +8,12 @@ public class ProfileModel extends Model{
 	
 	private String message;
 	private String passwd;
+	private int NStatusList;
 	public ProfileModel(){
 		filePath = "";
 		message = "";
 		passwd = "";
+		NStatusList = 3;
 	}
 	public void setPasswd(String passwd){
 		this.passwd = passwd;
@@ -48,6 +50,8 @@ public class ProfileModel extends Model{
 			return message;
 		}
 	}
+	public void setNStatusList(int N) { NStatusList = N; }
+	public int getNStatusList() { return NStatusList; }
 	
 }
 

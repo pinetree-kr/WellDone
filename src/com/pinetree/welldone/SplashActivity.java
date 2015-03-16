@@ -1,5 +1,6 @@
 package com.pinetree.welldone;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -20,8 +21,12 @@ public class SplashActivity extends BaseActivity {
         setContentView(R.layout.activity_splash);
         
  		if(savedInstanceState == null){
-			Fragment fragment = new SplashFragment();
-			switchFragment(fragment, true);
+			if (MainActivity.isRunning())
+				switchActivity(new Intent(this, MainActivity.class), true);
+			else {
+				Fragment fragment = new SplashFragment();
+				switchFragment(fragment, true);
+			}
 		}
 	}
 

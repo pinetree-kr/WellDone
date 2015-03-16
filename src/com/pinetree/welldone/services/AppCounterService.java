@@ -6,6 +6,7 @@ import java.util.TimerTask;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
+import android.app.KeyguardManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -20,10 +21,13 @@ import android.os.PowerManager;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.pinetree.welldone.LockActivity;
+import com.pinetree.welldone.MainActivity;
 import com.pinetree.welldone.R;
 import com.pinetree.welldone.models.PlanModel;
 import com.pinetree.welldone.models.PromiseModel;
@@ -41,7 +45,11 @@ public class AppCounterService extends Service{
 	private Timer timer;
 	//private ServiceCallBR receiver;
 	private static Intent lockIntent;
-	
+	private TelephonyManager myTeleMan;
+	private PhoneStateListener myPhoneListener;
+	private String phoneState = "idle";
+	private int minute = 60000/period;
+
 	public static void closeLockIntent(boolean close){
 		if(close)
 			lockIntent = null;
@@ -96,6 +104,9 @@ public class AppCounterService extends Service{
         }
         /**/
 		app = (DeviceInfo)getApplicationContext();
+		myTeleMan = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+		PhoneStateListener myPhoneListener = new phoneListener();
+		myTeleMan.listen(myPhoneListener, PhoneStateListener.LISTEN_CALL_STATE);
 	}
 	private class NotifyRunnable implements Runnable{
 		private PlanModel plan;
@@ -122,6 +133,8 @@ public class AppCounterService extends Service{
 		PlanModel plan;
 		PromiseModel promise;
 		int startId;
+		int screenOffPeriod = 0;
+		int screenOnPeriod = 0;
 		public CheckTask(int startId){
 			this.startId = startId;
 		}
@@ -133,18 +146,46 @@ public class AppCounterService extends Service{
 			// 앱의 사용기록을 갱신한다
 			plan = app.getPlan();
 			//TODO : 호출
-			promise = app.checkPromise();
-			if(promise!=null && promise.isLock()){
-				//Lock이 안 걸려있으면 락을 건다
-				if(!currentPkgName.equals("com.pinetree.welldone")){
-					if(!isLockScreenOn()){
-						lockIntent = new Intent(getApplicationContext(), LockActivity.class);
+			boolean isScreenOn = ((PowerManager)getApplicationContext()
+					.getSystemService(Context.POWER_SERVICE)).isScreenOn();
+			boolean isScreenLocked = ((KeyguardManager) getApplicationContext()
+					.getSystemService(Context.KEYGUARD_SERVICE)).inKeyguardRestrictedInputMode();
+			if (isScreenOn) {
+				screenOffPeriod = 0;
+				screenOnPeriod++;
+			} else {
+				screenOffPeriod++;
+				screenOnPeriod = 0;
+			}
+			promise = app.checkPromise(isScreenOn);
+			if(promise!=null && promise.isLock() && isScreenOn && !isScreenLocked) {
+				if (phoneState.equals("idle")) {
+					//Lock이 안 걸려있으면 락을 건다
+					// Do not lock when the phone is in use.
+					if (!currentPkgName.equals("com.pinetree.welldone")) {
+						if (!isLockScreenOn()) {
+							lockIntent = new Intent(getApplicationContext(), LockActivity.class);
+						}
+						lockIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("promise", promise);
+						getApplicationContext().startActivity(lockIntent);
+						// 사용량 갱신 안함
 					}
-					lockIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("promise", promise);
+				/*} else if(isLockScreenOn() && phoneState.equals("ringing")) {
+					// Phone rings will bring caller app to the front,
+					// and the LockActivity task will be moved to the back.
+					// Thus, it is not necessary to finish or stop LockActivity;
+					// just not re-calling startActivity(lockIntent) is enough!!
+					lockIntent = new Intent(getApplicationContext(), LockActivity.class);
+					lockIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("unlock", true);
 					getApplicationContext().startActivity(lockIntent);
+					closeLockIntent(true);*/
 				}
-				// 사용량 갱신 안함
 			}else{
+				if(promise!=null && !isScreenOn /* && !promise.isLock() [naturally true] */
+						&& (screenOffPeriod > minute)) {
+					promise.setLock(true);
+					app.updatePromise(promise);
+				}
 				if(plan.checkAlarm()){
 				//else if(plan.getUsage()%10==0){
 					//TODO : 여다가 팝업 띄우기
@@ -152,18 +193,26 @@ public class AppCounterService extends Service{
 				}
 
 				//화면켜졌을때
-				if(((PowerManager)getApplicationContext().getSystemService(Context.POWER_SERVICE)).isScreenOn()){
+				if(isScreenOn){
 					plan.updateUsage((int)(period/1000));
 					app.updatePlan(plan);
 					
 					// 노티피케이션 업데이트
-					NotificationCompat.Builder builder = getNotification();
-					builder
-						.setContentText("실시간 앱 체킹중입니다")
-						.setSubText("남은 시간 "+plan.getRemainFormat());
-					Notification noti =  builder.build();
-					NotificationManagerCompat nm = NotificationManagerCompat.from(getApplicationContext());
-					nm.notify(startId, noti);
+					if(screenOnPeriod % minute == 1) {
+						// screeonOnPeriod is initialized to 0 and incremented at first run,
+						// thus "1" is the first value it will meet
+						Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+						intent.putExtra("FromNotification", true);
+						PendingIntent clickIntent = PendingIntent.getActivity(getApplicationContext(), 1, intent, 0);
+						NotificationCompat.Builder builder = getNotification();
+						builder
+								.setContentText("실시간 앱 체킹중입니다")
+								.setSubText("남은 시간 " + plan.getRemainFormat());
+						builder.setContentIntent(clickIntent);
+						Notification noti = builder.build();
+						NotificationManagerCompat nm = NotificationManagerCompat.from(getApplicationContext());
+						nm.notify(startId, noti);
+					}
 					
 					
 					// 현재 가장 최상위에 실행되고 있는 태스크를 가져온다.
@@ -176,7 +225,7 @@ public class AppCounterService extends Service{
 							lastApp = pkgName;
 						}
 						
-						// 기록에 무시할 목록
+/*						// 기록에 무시할 목록
 						if(pkgName.equals("com.pinetree.welldone"))
 							continue;
 						if(pkgName.equals("com.android.systemui"))
@@ -184,7 +233,7 @@ public class AppCounterService extends Service{
 						if(pkgName.equals("com.android.launcher"))
 							continue;
 						if(pkgName.contains("launcher"))
-							continue;
+							continue;*/
 						
 						//앱의 사용목록을 갱신한다
 						app.updateRunningApp(pkgName, (int)(period/1000), isNew);
@@ -221,22 +270,44 @@ public class AppCounterService extends Service{
 		return START_STICKY;
 		//return START_NOT_STICKY;
 	}
-	
+
 	@Override
 	public void onDestroy(){	
-		Log.i("DebugPrint","Service Destoried");
+		Log.i("DebugPrint","Service Destroyed");
+		// destroy what was started
 		timer.cancel();
 		stopForeground(true);
+		// destroy what was created
+		myTeleMan.listen(myPhoneListener, PhoneStateListener.LISTEN_NONE);
 		/*/
 		if(receiver != null)
 			unregisterReceiver(receiver);
 			/**/
 		super.onDestroy();
 	}
-	
+
 	@Override
 	public IBinder onBind(Intent intent) {
 		return null;
 	}
-	
+
+	private class phoneListener extends PhoneStateListener {
+		@Override
+		public void onCallStateChanged(int state, String incomingNumber) {
+			switch (state) {
+				case TelephonyManager.CALL_STATE_IDLE:
+					phoneState = "idle";
+					break;
+
+				case TelephonyManager.CALL_STATE_RINGING:
+					phoneState = "ringing";
+					break;
+
+				case TelephonyManager.CALL_STATE_OFFHOOK:
+					phoneState = "offhook";
+			}
+
+		}
+	}
+
 }
